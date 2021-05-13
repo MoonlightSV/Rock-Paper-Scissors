@@ -4,6 +4,14 @@ const wss = new WebSocket.Server({
   port: 8080
 });
 
+wss.broadcast = function(data) {
+  this.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(data);
+    }
+  });
+}
+
 let playerNumber = 0;
 let players = [];
 let selections = new Map();
@@ -20,6 +28,7 @@ wss.on('connection', ws => {
   ws.on('close', () => {
     playerNumber -= 1;
     if (players.includes(ws)) players.splice(players.indexOf(ws), 1);
+    if (playerNumber < 2) wss.broadcast('wait');
   });
 
   playerNumber += 1;
@@ -28,6 +37,12 @@ wss.on('connection', ws => {
   } else {
     console.log('Too much');
     ws.close();
+  }
+
+  if (playerNumber < 2) {
+    wss.broadcast('wait');
+  } else {
+    wss.broadcast('start');
   }
 });
 
