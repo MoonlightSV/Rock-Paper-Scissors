@@ -4,9 +4,9 @@ const wss = new WebSocket.Server({
   port: 8080
 });
 
-wss.broadcast = function(data) {
+wss.broadcast = function(data, clientValidator = () => true) {
   this.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
+    if (clientValidator(client)) {
       client.send(data);
     }
   });
@@ -20,6 +20,7 @@ let winner = new Map();
 wss.on('connection', ws => {
   ws.on('message', message => {
     selections.set(ws, message);
+    wss.broadcast('chose', client => client !== ws);
     if (selections.size === 2) {
       makeSelection();
     }    
@@ -27,6 +28,7 @@ wss.on('connection', ws => {
 
   ws.on('close', () => {
     playerNumber -= 1;
+    if (selections.has(ws)) selections.delete(ws);
     if (players.includes(ws)) players.splice(players.indexOf(ws), 1);
     if (playerNumber < 2) wss.broadcast('wait');
   });

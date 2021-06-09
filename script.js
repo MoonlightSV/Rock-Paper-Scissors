@@ -16,6 +16,9 @@ ws.onopen = () => {
 				gameStartFlag = true;
 				console.log('The game is on...');
 			break;
+			case 'chose':
+				finalColumn.classList.add('chosen');
+				break;
 			default:
 				if (gameStartFlag) makeSelection(data);
 		}
@@ -58,6 +61,10 @@ selectionButtons.forEach(selectionButton => {
 	selectionButton.addEventListener('click', e => {
 		const selectionName = selectionButton.dataset.selection;
 		const selection = SELECTIONS.find(selection => selection.name === selectionName);
+		selectionButtons.forEach(selectionButton => {
+			selectionButton.classList.remove('selection_checked');
+		});
+		selectionButton.classList.add('selection_checked');
 		ws.send(JSON.stringify(selection));
 	});
 });
@@ -74,6 +81,11 @@ function makeSelection(data) {
 
 	if (winner) incrementScore(yourScoreSpan);
 	if (opponentWinner) incrementScore(opponentScoreSpan);
+
+	selectionButtons.forEach(selectionButton => {
+		selectionButton.classList.remove('selection_checked');
+	});
+	finalColumn.classList.remove('chosen');
 }
 
 function addSelectionResult(selection, winner) {
@@ -91,7 +103,9 @@ function incrementScore(scoreSpan) {
 function resetGame() {
 	selectionButtons.forEach(selectionButton => {
 		selectionButton.setAttribute('disabled', 'disabled');
+		selectionButton.classList.remove('selection_checked');
 	});
+	finalColumn.classList.remove('chosen');
 	yourScoreSpan.innerText = '0';
 	opponentScoreSpan.innerText = '0';
 	let selectionResults = document.querySelectorAll('.result-selection');

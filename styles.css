@@ -1,5 +1,5 @@
 body {
-	background-color: #ccc;
+	/*background-color: #ccc;*/
 }
 
 .selections {
@@ -18,6 +18,18 @@ body {
 
 .selection:hover {
 	transform: scale(1.2);
+}
+
+.selection:active {
+	transform: scale(1);
+}
+
+.selection_checked {
+	text-shadow: 0 0 5px rgba(100, 0, 255, 1);
+}
+
+.selection_checked:hover {
+	text-shadow: 0 0 6px rgba(100, 0, 255, 1);
 }
 
 .results {
@@ -41,4 +53,8 @@ body {
 .result-selection.winner {
 	opacity: 1;
 	font-size: 1.5rem;
+}
+
+.chosen span:first-child {
+	text-shadow: 0 0 5px rgba(100, 0, 255, 0.8);
 }
